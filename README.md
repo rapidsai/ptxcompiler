@@ -10,15 +10,18 @@ part of the compilation process. This covers all use cases, except:
 - Debugging features - this includes debug and lineinfo generation, and
   exception checking inside CUDA kernels.
 
-The package is registered as a Numba extension - its initialization routine
-patches Numba, so once it is installed in the environment, Numba will be
-patched automatically.
-
 
 ## Numba support
 
 Numba 0.54.1 and the current master branch are supported - other versions of
 Numba are unsupported.
+
+To patch Numba at runtime to use this binding, use:
+
+```python
+from ptxcompiler.patch import patch_numba_codegen
+patch_numba_codegen()
+```
 
 
 ## Installation

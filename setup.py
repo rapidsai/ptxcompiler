@@ -27,7 +27,4 @@ setup(
     version='0.1',
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
-    entry_points={'numba_extensions': [
-        'init = ptxcompiler.patch:patch_numba_codegen'
-    ]},
 )
