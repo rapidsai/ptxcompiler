@@ -1,0 +1,6 @@
+__pycache__
+build
+*.so
+*.egg-info
+.*.swp
+.ycm_extra_conf.py
