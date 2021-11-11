@@ -37,3 +37,12 @@ or
 ```
 python setup.py install
 ```
+
+
+# To do
+
+- Memory management / cleanup in the C++ extension
+- General cleanup of the C++ extension
+- Better test coverage
+- Add testing of the Numba patch function
+- Conda packaging
