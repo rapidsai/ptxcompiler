@@ -24,7 +24,7 @@ PTXCompilerResult = namedtuple(
 
 def compile_ptx(ptx, options):
     options = tuple(options)
-    handle = _ptxcompilerlib.create(len(ptx), ptx)
+    handle = _ptxcompilerlib.create(ptx)
     try:
         _ptxcompilerlib.compile(handle, options)
     except RuntimeError:
