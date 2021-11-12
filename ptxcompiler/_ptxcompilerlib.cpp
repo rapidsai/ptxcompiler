@@ -149,6 +149,7 @@ static PyObject* get_error_log(PyObject *self, PyObject *args)
     return nullptr;
   }
 
+  // The size returned doesn't include a trailing null byte
   char *error_log = new char[error_log_size + 1];
   res = nvPTXCompilerGetErrorLog(*compiler, error_log);
   if (res != NVPTXCOMPILE_SUCCESS)
@@ -157,7 +158,13 @@ static PyObject* get_error_log(PyObject *self, PyObject *args)
     return nullptr;
   }
 
-  return PyUnicode_FromStringAndSize(error_log, error_log_size);
+  PyObject *py_log = PyUnicode_FromStringAndSize(error_log, error_log_size);
+  // Once we've copied the log to a Python object we can delete it - we don't
+  // need to check whether creation of the Unicode object succeeded, because we
+  // delete the log either way.
+  delete[] error_log;
+
+  return py_log;
 }
 
 static PyObject* get_info_log(PyObject *self, PyObject *args)
@@ -174,6 +181,7 @@ static PyObject* get_info_log(PyObject *self, PyObject *args)
     return nullptr;
   }
 
+  // The size returned doesn't include a trailing null byte
   char *info_log = new char[info_log_size + 1];
   res = nvPTXCompilerGetInfoLog(*compiler, info_log);
   if (res != NVPTXCOMPILE_SUCCESS)
@@ -182,7 +190,13 @@ static PyObject* get_info_log(PyObject *self, PyObject *args)
     return nullptr;
   }
 
-  return PyUnicode_FromStringAndSize(info_log, info_log_size);
+  PyObject *py_log = PyUnicode_FromStringAndSize(info_log, info_log_size);
+  // Once we've copied the log to a Python object we can delete it - we don't
+  // need to check whether creation of the Unicode object succeeded, because we
+  // delete the log either way.
+  delete[] info_log;
+
+  return py_log;
 }
 
 static PyObject* get_compiled_program(PyObject *self, PyObject *args)
@@ -207,9 +221,14 @@ static PyObject* get_compiled_program(PyObject *self, PyObject *args)
     return nullptr;
   }
 
-  return PyBytes_FromStringAndSize(compiled_program, compiled_program_size);
-}
+  PyObject* py_prog = PyBytes_FromStringAndSize(compiled_program, compiled_program_size);
+  // Once we've copied the compiled program to a Python object we can delete it - we don't
+  // need to check whether creation of the Unicode object succeeded, because we
+  // delete the compiled program either way.
+  delete[] compiled_program;
 
+  return py_prog;
+}
 
 static PyMethodDef ext_methods[] = {
   { "get_version", (PyCFunction)get_version, METH_NOARGS, "Returns a tuple giving the version" },
