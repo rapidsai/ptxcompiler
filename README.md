@@ -54,6 +54,20 @@ python ptxcompiler/tests/test_lib.py
 ```
 
 
+## Usage
+
+To patch Numba to use the Static PTX Compiler library if needed, call the
+`patch_numba_codegen_if_needed()` function:
+
+```python
+from ptxcompiler.patch import patch_numba_codegen_if_needed
+patch_numba_codegen_if_needed()
+```
+
+This function spawns a new process to check the CUDA Driver and Runtime API
+versions, so it can be safely called at any point in a process.
+
+
 # To do
 
 - Better test coverage
