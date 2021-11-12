@@ -127,7 +127,7 @@ static PyObject* get_error_log(PyObject *self, PyObject *args)
     return nullptr;
   }
 
-  char *error_log = new char[error_log_size];
+  char *error_log = new char[error_log_size + 1];
   res = nvPTXCompilerGetErrorLog(*compiler, error_log);
   if (res != NVPTXCOMPILE_SUCCESS)
   {
@@ -152,7 +152,7 @@ static PyObject* get_info_log(PyObject *self, PyObject *args)
     return nullptr;
   }
 
-  char *info_log = new char[info_log_size];
+  char *info_log = new char[info_log_size + 1];
   res = nvPTXCompilerGetInfoLog(*compiler, info_log);
   if (res != NVPTXCOMPILE_SUCCESS)
   {
