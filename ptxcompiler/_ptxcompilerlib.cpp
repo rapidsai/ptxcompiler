@@ -21,6 +21,7 @@
 static PyObject *get_version(PyObject *self)
 {
   unsigned int major, minor;
+  PyObject *py_major = nullptr, *py_minor = nullptr, *py_version = nullptr;
   nvPTXCompileResult res = nvPTXCompilerGetVersion(&major, &minor);
   if (res != NVPTXCOMPILE_SUCCESS)
   {
@@ -28,12 +29,22 @@ static PyObject *get_version(PyObject *self)
     return nullptr;
   }
 
-  // XXX: Error handling
-  PyObject *py_major = PyLong_FromUnsignedLong(major);
-  PyObject *py_minor = PyLong_FromUnsignedLong(minor);
-  PyObject *version = PyTuple_Pack(2, py_major, py_minor);
+  if((py_major = PyLong_FromUnsignedLong(major)) == nullptr)
+    goto error;
 
-  return version;
+  if((py_minor = PyLong_FromUnsignedLong(minor)) == nullptr)
+    goto error;
+
+  if((py_version = PyTuple_Pack(2, py_major, py_minor)) == nullptr)
+    goto error;
+
+  return py_version;
+
+error:
+  Py_XDECREF(py_major);
+  Py_XDECREF(py_minor);
+  Py_XDECREF(py_version);
+  return nullptr;
 }
 
 static PyObject *create(PyObject *self, PyObject *args)
