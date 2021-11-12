@@ -24,19 +24,10 @@ static PyObject *get_version(PyObject *self) {
   PyObject *py_major = nullptr, *py_minor = nullptr, *py_version = nullptr;
 
   nvPTXCompileResult res = nvPTXCompilerGetVersion(&major, &minor);
-  if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetVersion");
-    return nullptr;
-  }
-
-  if ((py_major = PyLong_FromUnsignedLong(major)) == nullptr)
-    goto error;
-
-  if ((py_minor = PyLong_FromUnsignedLong(minor)) == nullptr)
-    goto error;
-
-  if ((py_version = PyTuple_Pack(2, py_major, py_minor)) == nullptr)
+  if ((res != NVPTXCOMPILE_SUCCESS) ||
+      ((py_major = PyLong_FromUnsignedLong(major)) == nullptr) ||
+      ((py_minor = PyLong_FromUnsignedLong(minor)) == nullptr) ||
+      ((py_version = PyTuple_Pack(2, py_major, py_minor)) == nullptr))
     goto error;
 
   return py_version;
@@ -45,6 +36,7 @@ error:
   Py_XDECREF(py_major);
   Py_XDECREF(py_minor);
   Py_XDECREF(py_version);
+  PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerGetVersion");
   return nullptr;
 }
 
@@ -67,7 +59,6 @@ static PyObject *create(PyObject *self, PyObject *args) {
   nvPTXCompileResult res =
       nvPTXCompilerCreate(compiler, ptx_code_len, ptx_code);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerCreate");
     goto error;
   }
 
@@ -83,6 +74,7 @@ static PyObject *create(PyObject *self, PyObject *args) {
   return ret;
 
 error:
+  PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerCreate");
   delete compiler;
   return nullptr;
 }
