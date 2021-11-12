@@ -57,8 +57,9 @@ from ptxcompiler.patch import patch_numba_codegen_if_needed
 patch_numba_codegen_if_needed()
 ```
 
-This function spawns a new process to check the CUDA Driver and Runtime API
-versions, so it can be safely called at any point in a process.
+This function spawns a new process to check the CUDA Driver and Runtime
+versions, so it can be safely called at any point in a process. It will only
+patch Numba when the Runtime version exceeds the Driver version.
 
 
 # To do
