@@ -16,13 +16,6 @@ part of the compilation process. This covers all use cases, except:
 Numba 0.54.1 and the current master branch are supported - other versions of
 Numba are unsupported.
 
-To patch Numba at runtime to use this binding, use:
-
-```python
-from ptxcompiler.patch import patch_numba_codegen
-patch_numba_codegen()
-```
-
 
 ## Installation
 
