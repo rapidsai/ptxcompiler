@@ -25,8 +25,12 @@ requirements:
     - numba >=0.54
 
 test:
+  requires:
+    - pytest
+
   commands:
     - python -c "from ptxcompiler import patch; patch.patch_numba_codegen_if_needed()"
+    - pytest -v --pyargs ptxcompiler
 
 about:
   home: https://rapids.ai/
