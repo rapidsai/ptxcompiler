@@ -244,7 +244,7 @@ static PyMethodDef ext_methods[] = {
 static struct PyModuleDef moduledef = {
   PyModuleDef_HEAD_INIT,
   "ptxcompiler",
-  "No docs",
+  "Provides access to PTX compiler API methods",
   -1,
   ext_methods
 };
