@@ -39,10 +39,23 @@ python setup.py install
 ```
 
 
+## Testing
+
+Run
+
+```
+pytest
+```
+
+or
+
+```
+python ptxcompiler/tests/test_lib.py
+```
+
+
 # To do
 
-- Memory management / cleanup in the C++ extension
-- General cleanup of the C++ extension
 - Better test coverage
 - Add testing of the Numba patch function
 - Conda packaging
