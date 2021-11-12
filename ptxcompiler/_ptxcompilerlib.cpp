@@ -17,14 +17,15 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <nvPTXCompiler.h>
+#include <new>
 
 static PyObject *get_version(PyObject *self)
 {
   unsigned int major, minor;
   PyObject *py_major = nullptr, *py_minor = nullptr, *py_version = nullptr;
+
   nvPTXCompileResult res = nvPTXCompilerGetVersion(&major, &minor);
-  if (res != NVPTXCOMPILE_SUCCESS)
-  {
+  if (res != NVPTXCOMPILE_SUCCESS) {
     PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerGetVersion");
     return nullptr;
   }
@@ -50,20 +51,41 @@ error:
 static PyObject *create(PyObject *self, PyObject *args)
 {
   Py_ssize_t ptx_code_len;
+  PyObject *ret = nullptr;
   char *ptx_code;
+  nvPTXCompilerHandle *compiler;
+
   if (!PyArg_ParseTuple(args, "ns", &ptx_code_len, &ptx_code))
     return nullptr;
 
-  nvPTXCompilerHandle *compiler = new nvPTXCompilerHandle;
+  try {
+    compiler = new nvPTXCompilerHandle;
+  }
+  catch (const std::bad_alloc&) {
+    PyErr_NoMemory();
+    return nullptr;
+  }
+
   nvPTXCompileResult res = nvPTXCompilerCreate(compiler, ptx_code_len, ptx_code);
   if (res != NVPTXCOMPILE_SUCCESS)
   {
     PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerCreate");
-    delete compiler;
-    return nullptr;
+    goto error;
   }
 
-  return PyLong_FromUnsignedLongLong((unsigned long long)compiler);
+  if ((ret = PyLong_FromUnsignedLongLong((unsigned long long)compiler)) == nullptr) {
+    // Attempt to destroy the compiler - since we're already in an error condition,
+    // there's no point in checking the return code and taking any further
+    // action based on it though.
+    nvPTXCompilerDestroy(compiler);
+    goto error;
+  }
+
+  return ret;
+
+error:
+  delete compiler;
+  return nullptr;
 }
 
 static PyObject *destroy(PyObject *self, PyObject *args)
