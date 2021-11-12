@@ -96,10 +96,10 @@ def test_get_error_log():
 
 
 def test_get_info_log():
-    # XXX: Info log is empty
     handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
     _ptxcompilerlib.compile(handle, OPTIONS)
     info_log = _ptxcompilerlib.get_info_log(handle)
+    # Info log is empty
     assert "" == info_log
 
 
@@ -107,6 +107,7 @@ def test_get_compiled_program():
     handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
     _ptxcompilerlib.compile(handle, OPTIONS)
     compiled_program = _ptxcompilerlib.get_compiled_program(handle)
+    # Check the compiled program is an ELF file by looking for the ELF header
     assert compiled_program[:4] == b'\x7fELF'
 
 
