@@ -20,6 +20,7 @@ module = Extension(
     include_dirs=['/usr/local/cuda-11.5/include'],
     libraries=['nvptxcompiler_static'],
     library_dirs=['/usr/local/cuda-11.5/lib64'],
+    extra_compile_args=['-Wall', '-Werror'],
 )
 
 setup(
