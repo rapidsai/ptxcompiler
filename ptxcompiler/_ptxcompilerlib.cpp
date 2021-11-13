@@ -19,14 +19,55 @@
 #include <new>
 #include <nvPTXCompiler.h>
 
+static const char *nvPTXGetErrorEnum(nvPTXCompileResult error) {
+  switch (error) {
+    case NVPTXCOMPILE_SUCCESS:
+      return "NVPTXCOMPILE_SUCCESS";
+
+    case NVPTXCOMPILE_ERROR_INVALID_COMPILER_HANDLE:
+      return "NVPTXCOMPILE_ERROR_INVALID_COMPILER_HANDLE";
+
+    case NVPTXCOMPILE_ERROR_INVALID_INPUT:
+      return "NVPTXCOMPILE_ERROR_INVALID_INPUT";
+
+    case NVPTXCOMPILE_ERROR_COMPILATION_FAILURE:
+      return "NVPTXCOMPILE_ERROR_COMPILATION_FAILURE";
+
+    case NVPTXCOMPILE_ERROR_INTERNAL:
+      return "NVPTXCOMPILE_ERROR_INTERNAL";
+
+    case NVPTXCOMPILE_ERROR_OUT_OF_MEMORY:
+      return "NVPTXCOMPILE_ERROR_OUT_OF_MEMORY";
+
+    case NVPTXCOMPILE_ERROR_COMPILER_INVOCATION_INCOMPLETE:
+      return "NVPTXCOMPILE_ERROR_COMPILER_INVOCATION_INCOMPLETE";
+
+    case NVPTXCOMPILE_ERROR_UNSUPPORTED_PTX_VERSION:
+      return "NVPTXCOMPILE_ERROR_UNSUPPORTED_PTX_VERSION";
+
+    default:
+      return "<unknown>";
+  }
+}
+
+void set_exception(PyObject *exception_type,
+                                 const char* message_format,
+                                 nvPTXCompileResult error) {
+    char exception_message[256];
+    sprintf(exception_message, message_format, nvPTXGetErrorEnum(error));
+
+    PyErr_SetString(exception_type, exception_message);
+}
+
 static PyObject *get_version(PyObject *self) {
   unsigned int major, minor;
   PyObject *py_version = nullptr;
 
   nvPTXCompileResult res = nvPTXCompilerGetVersion(&major, &minor);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetVersion");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetVersion",
+                  res);
     return nullptr;
   }
 
@@ -63,7 +104,9 @@ static PyObject *create(PyObject *self, PyObject *args) {
   nvPTXCompileResult res =
       nvPTXCompilerCreate(compiler, ptx_code_len, ptx_code);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerCreate");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerCreate",
+                  res);
     goto error;
   }
 
@@ -91,7 +134,9 @@ static PyObject *destroy(PyObject *self, PyObject *args) {
   nvPTXCompileResult res = nvPTXCompilerDestroy(compiler);
 
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerDestroy");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerDestroy",
+                  res);
     return nullptr;
   }
 
@@ -119,7 +164,9 @@ static PyObject *compile(PyObject *self, PyObject *args) {
   delete[] compile_options;
 
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError, "Error calling nvPTXCompilerCompile");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerCompile",
+                  res);
     return nullptr;
   }
 
@@ -135,8 +182,9 @@ static PyObject *get_error_log(PyObject *self, PyObject *args) {
   nvPTXCompileResult res =
       nvPTXCompilerGetErrorLogSize(*compiler, &error_log_size);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetErrorLogSize");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetErrorLogSize",
+                  res);
     return nullptr;
   }
 
@@ -144,8 +192,9 @@ static PyObject *get_error_log(PyObject *self, PyObject *args) {
   char *error_log = new char[error_log_size + 1];
   res = nvPTXCompilerGetErrorLog(*compiler, error_log);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetErrorLog");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetErrorLog",
+                  res);
     return nullptr;
   }
 
@@ -167,8 +216,9 @@ static PyObject *get_info_log(PyObject *self, PyObject *args) {
   nvPTXCompileResult res =
       nvPTXCompilerGetInfoLogSize(*compiler, &info_log_size);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetInfoLogSize");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetInfoLogSize",
+                  res);
     return nullptr;
   }
 
@@ -176,8 +226,9 @@ static PyObject *get_info_log(PyObject *self, PyObject *args) {
   char *info_log = new char[info_log_size + 1];
   res = nvPTXCompilerGetInfoLog(*compiler, info_log);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetInfoLog");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetInfoLog",
+                  res);
     return nullptr;
   }
 
@@ -199,16 +250,18 @@ static PyObject *get_compiled_program(PyObject *self, PyObject *args) {
   nvPTXCompileResult res =
       nvPTXCompilerGetCompiledProgramSize(*compiler, &compiled_program_size);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetCompiledProgramSize");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetCompiledProgramSize",
+                  res);
     return nullptr;
   }
 
   char *compiled_program = new char[compiled_program_size];
   res = nvPTXCompilerGetCompiledProgram(*compiler, compiled_program);
   if (res != NVPTXCOMPILE_SUCCESS) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Error calling nvPTXCompilerGetCompiledProgram");
+    set_exception(PyExc_RuntimeError,
+                  "%s error when calling nvPTXCompilerGetCompiledProgram",
+                  res);
     return nullptr;
   }
 
