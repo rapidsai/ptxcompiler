@@ -79,8 +79,6 @@ static PyObject *get_version(PyObject *self) {
   return py_version;
 
 error:
-  Py_XDECREF(py_major);
-  Py_XDECREF(py_minor);
   Py_XDECREF(py_version);
   return nullptr;
 }
