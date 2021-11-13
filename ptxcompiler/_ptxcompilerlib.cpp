@@ -21,7 +21,7 @@
 
 static PyObject *get_version(PyObject *self) {
   unsigned int major, minor;
-  PyObject *py_major = nullptr, *py_minor = nullptr, *py_version = nullptr;
+  PyObject *py_version = nullptr;
 
   nvPTXCompileResult res = nvPTXCompilerGetVersion(&major, &minor);
   if (res != NVPTXCOMPILE_SUCCESS) {
@@ -30,14 +30,10 @@ static PyObject *get_version(PyObject *self) {
     return nullptr;
   }
 
-  if ((py_major = PyLong_FromUnsignedLong(major)) == nullptr)
+  if ((py_version = Py_BuildValue("(II)", major, minor)) == nullptr) {
+    PyErr_SetString(PyExc_RuntimeError, "Error creating tuple");
     goto error;
-
-  if ((py_minor = PyLong_FromUnsignedLong(minor)) == nullptr)
-    goto error;
-
-  if ((py_version = PyTuple_Pack(2, py_major, py_minor)) == nullptr)
-    goto error;
+  }
 
   return py_version;
 
