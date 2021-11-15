@@ -62,7 +62,6 @@ void set_exception(PyObject *exception_type,
 
 static PyObject *get_version(PyObject *self) {
   unsigned int major, minor;
-  PyObject *py_version = nullptr;
 
   nvPTXCompileResult res = nvPTXCompilerGetVersion(&major, &minor);
   if (res != NVPTXCOMPILE_SUCCESS) {
@@ -72,16 +71,7 @@ static PyObject *get_version(PyObject *self) {
     return nullptr;
   }
 
-  if ((py_version = Py_BuildValue("(II)", major, minor)) == nullptr) {
-    PyErr_SetString(PyExc_RuntimeError, "Error creating tuple");
-    goto error;
-  }
-
-  return py_version;
-
-error:
-  Py_XDECREF(py_version);
-  return nullptr;
+  return Py_BuildValue("(II)", major, minor);
 }
 
 static PyObject *create(PyObject *self, PyObject *args) {
