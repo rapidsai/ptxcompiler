@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import logging
-import multiprocessing as mp
+import subprocess
 import sys
-import traceback
 
 from ctypes import byref, c_int
 from numba import config, cuda
@@ -92,44 +91,32 @@ class PTXStaticCompileCodeLibrary(codegen.CUDACodeLibrary):
         return cubin
 
 
-def get_driver_and_runtime_versions():
+def print_driver_and_runtime_versions():
     # Numba doesn't provide a convenient function to get the driver version, so
     # we need to access it through its ctypes binding
     dv = c_int(0)
     cuda.cudadrv.driver.driver.cuDriverGetVersion(byref(dv))
-    major = dv.value // 1000
-    minor = (dv.value - (major * 1000)) // 10
-    driver_version = (major, minor)
-    runtime_version = cuda.runtime.get_version()
-    return (driver_version, runtime_version)
-
-
-def get_versions_wrapper(result_queue):
-    try:
-        output = get_driver_and_runtime_versions()
-        success = True
-    # We catch all exceptions so that they can be propagated
-    except:  # noqa: E722
-        # Record the exception as a string for the caller to report to the user
-        output = traceback.format_exc()
-        success = False
-
-    result_queue.put((success, output))
+    drv_major = dv.value // 1000
+    drv_minor = (dv.value - (drv_major * 1000)) // 10
+    run_major, run_minor = cuda.runtime.get_version()
+    print(f'{drv_major} {drv_minor} {run_major} {run_minor}')
 
 
 def patch_needed():
-    ctx = mp.get_context('spawn')
-    result_queue = ctx.Queue()
-    proc = ctx.Process(target=get_versions_wrapper, args=(result_queue,))
-    proc.start()
-    proc.join()
-    success, output = result_queue.get()
+    cp = subprocess.run([sys.executable, '-c',
+                         'from ptxcompiler.patch import '
+                         'print_driver_and_runtime_versions; '
+                         'print_driver_and_runtime_versions()'],
+                        capture_output=True)
 
-    if not success:
-        msg = f"Error getting driver and runtime versions:\n{output}"
+    if cp.returncode:
+        msg = (f'Error getting driver and runtime versions:\n\nstdout:\n\n'
+               f'{cp.stdout.decode()}\n\nstderr:\n\n{cp.stderr.decode()}')
         raise RuntimeError(msg)
 
-    driver_version, runtime_version = output
+    versions = [int(s) for s in cp.stdout.strip().split()]
+    driver_version = tuple(versions[:2])
+    runtime_version = tuple(versions[2:])
 
     logger = get_logger()
     logger.debug("CUDA Driver version %s.%s" % driver_version)
