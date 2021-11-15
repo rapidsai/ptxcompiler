@@ -103,6 +103,8 @@ def print_driver_and_runtime_versions():
 
 
 def patch_needed():
+    logger = get_logger()
+
     cp = subprocess.run([sys.executable, '-c',
                          'from ptxcompiler.patch import '
                          'print_driver_and_runtime_versions; '
@@ -111,14 +113,15 @@ def patch_needed():
 
     if cp.returncode:
         msg = (f'Error getting driver and runtime versions:\n\nstdout:\n\n'
-               f'{cp.stdout.decode()}\n\nstderr:\n\n{cp.stderr.decode()}')
-        raise RuntimeError(msg)
+               f'{cp.stdout.decode()}\n\nstderr:\n\n{cp.stderr.decode()}\n\n'
+               'Not patching Numba')
+        logger.error(msg)
+        return False
 
     versions = [int(s) for s in cp.stdout.strip().split()]
     driver_version = tuple(versions[:2])
     runtime_version = tuple(versions[2:])
 
-    logger = get_logger()
     logger.debug("CUDA Driver version %s.%s" % driver_version)
     logger.debug("CUDA Runtime version %s.%s" % runtime_version)
 
