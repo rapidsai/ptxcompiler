@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+from distutils.sysconfig import get_config_var, get_python_inc
 from setuptools import setup, Extension
 
 module = Extension(
     'ptxcompiler._ptxcompilerlib',
     sources=['ptxcompiler/_ptxcompilerlib.cpp'],
-    include_dirs=['/usr/local/cuda-11.5/include'],
+    include_dirs=[os.path.dirname(get_python_inc())],
     libraries=['nvptxcompiler_static'],
-    library_dirs=['/usr/local/cuda-11.5/lib64'],
+    library_dirs = [get_config_var("LIBDIR")],
     extra_compile_args=['-Wall', '-Werror'],
 )
 
