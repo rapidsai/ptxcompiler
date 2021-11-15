@@ -18,6 +18,7 @@
 #include <Python.h>
 #include <new>
 #include <nvPTXCompiler.h>
+#include <string.h>
 
 static const char *nvPTXGetErrorEnum(nvPTXCompileResult error) {
   switch (error) {
@@ -84,12 +85,11 @@ error:
 }
 
 static PyObject *create(PyObject *self, PyObject *args) {
-  Py_ssize_t ptx_code_len;
   PyObject *ret = nullptr;
   char *ptx_code;
   nvPTXCompilerHandle *compiler;
 
-  if (!PyArg_ParseTuple(args, "ns", &ptx_code_len, &ptx_code))
+  if (!PyArg_ParseTuple(args, "s", &ptx_code))
     return nullptr;
 
   try {
@@ -100,7 +100,7 @@ static PyObject *create(PyObject *self, PyObject *args) {
   }
 
   nvPTXCompileResult res =
-      nvPTXCompilerCreate(compiler, ptx_code_len, ptx_code);
+      nvPTXCompilerCreate(compiler, strlen(ptx_code), ptx_code);
   if (res != NVPTXCOMPILE_SUCCESS) {
     set_exception(PyExc_RuntimeError,
                   "%s error when calling nvPTXCompilerCreate",

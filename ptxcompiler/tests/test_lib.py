@@ -53,24 +53,24 @@ def test_get_version():
 
 
 def test_create():
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     assert handle != 0
 
 
 def test_destroy():
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     _ptxcompilerlib.destroy(handle)
 
 
 def test_compile():
     # Check that compile does not error
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     _ptxcompilerlib.compile(handle, OPTIONS)
 
 
 def test_compile_options():
     options = ('--gpu-name=sm_75', '--device-debug')
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     _ptxcompilerlib.compile(handle, options)
     compiled_program = _ptxcompilerlib.get_compiled_program(handle)
     assert b'nv_debug' in compiled_program
@@ -78,7 +78,7 @@ def test_compile_options():
 
 def test_compile_options_bad_option():
     options = ('--gpu-name=sm_75', '--bad-option')
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     with pytest.raises(RuntimeError,
                        match="NVPTXCOMPILE_ERROR_COMPILATION_FAILURE error"):
         _ptxcompilerlib.compile(handle, options)
@@ -88,7 +88,7 @@ def test_compile_options_bad_option():
 
 def test_get_error_log():
     bad_ptx = ".target sm_52"
-    handle = _ptxcompilerlib.create(len(bad_ptx), bad_ptx)
+    handle = _ptxcompilerlib.create(bad_ptx)
     with pytest.raises(RuntimeError):
         _ptxcompilerlib.compile(handle, OPTIONS)
 
@@ -97,7 +97,7 @@ def test_get_error_log():
 
 
 def test_get_info_log():
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     _ptxcompilerlib.compile(handle, OPTIONS)
     info_log = _ptxcompilerlib.get_info_log(handle)
     # Info log is empty
@@ -105,7 +105,7 @@ def test_get_info_log():
 
 
 def test_get_compiled_program():
-    handle = _ptxcompilerlib.create(len(PTX_CODE), PTX_CODE)
+    handle = _ptxcompilerlib.create(PTX_CODE)
     _ptxcompilerlib.compile(handle, OPTIONS)
     compiled_program = _ptxcompilerlib.get_compiled_program(handle)
     # Check the compiled program is an ELF file by looking for the ELF header
