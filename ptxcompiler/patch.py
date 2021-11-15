@@ -91,25 +91,22 @@ class PTXStaticCompileCodeLibrary(codegen.CUDACodeLibrary):
         return cubin
 
 
-def print_driver_and_runtime_versions():
-    # Numba doesn't provide a convenient function to get the driver version, so
-    # we need to access it through its ctypes binding
-    dv = c_int(0)
-    cuda.cudadrv.driver.driver.cuDriverGetVersion(byref(dv))
-    drv_major = dv.value // 1000
-    drv_minor = (dv.value - (drv_major * 1000)) // 10
-    run_major, run_minor = cuda.runtime.get_version()
-    print(f'{drv_major} {drv_minor} {run_major} {run_minor}')
+CMD = """\
+from ctypes import c_int, byref
+from numba import cuda
+dv = c_int(0)
+cuda.cudadrv.driver.driver.cuDriverGetVersion(byref(dv))
+drv_major = dv.value // 1000
+drv_minor = (dv.value - (drv_major * 1000)) // 10
+run_major, run_minor = cuda.runtime.get_version()
+print(f'{drv_major} {drv_minor} {run_major} {run_minor}')
+"""
 
 
 def patch_needed():
     logger = get_logger()
 
-    cp = subprocess.run([sys.executable, '-c',
-                         'from ptxcompiler.patch import '
-                         'print_driver_and_runtime_versions; '
-                         'print_driver_and_runtime_versions()'],
-                        capture_output=True)
+    cp = subprocess.run([sys.executable, '-c', CMD], capture_output=True)
 
     if cp.returncode:
         msg = (f'Error getting driver and runtime versions:\n\nstdout:\n\n'
