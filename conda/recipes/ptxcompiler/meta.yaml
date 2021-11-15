@@ -14,19 +14,25 @@ source:
 build:
   number: {{ GIT_DESCRIBE_NUMBER }}
   string: cuda_{{ cuda_version }}_py{{ py_version }}_{{ GIT_DESCRIBE_HASH }}_{{ GIT_DESCRIBE_NUMBER }}
-  script: python setup.py install
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   build:
     - python
-    - setuptools
+    - pip
   run:
     - python
     - numba >=0.54
 
 test:
+  requires:
+    - pip
+    - pytest
+
   commands:
+    - pip check
     - python -c "from ptxcompiler import patch; patch.patch_numba_codegen_if_needed()"
+    - pytest -v --pyargs ptxcompiler
 
 about:
   home: https://rapids.ai/

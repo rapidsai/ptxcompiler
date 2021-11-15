@@ -79,7 +79,8 @@ def test_compile_options():
 def test_compile_options_bad_option():
     options = ('--gpu-name=sm_75', '--bad-option')
     handle = _ptxcompilerlib.create(PTX_CODE)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError,
+                       match="NVPTXCOMPILE_ERROR_COMPILATION_FAILURE error"):
         _ptxcompilerlib.compile(handle, options)
     error_log = _ptxcompilerlib.get_error_log(handle)
     assert "Unknown option" in error_log
