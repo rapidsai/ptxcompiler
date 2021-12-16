@@ -27,7 +27,7 @@ module = Extension(
 
 setup(
     name='ptxcompiler',
-    version='0.1',
+    version='0.2.0',
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
     packages=['ptxcompiler', 'ptxcompiler.tests'],
