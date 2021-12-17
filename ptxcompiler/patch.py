@@ -16,8 +16,7 @@ import logging
 import subprocess
 import sys
 
-from ctypes import byref, c_int
-from numba import config, cuda
+from numba import config
 from numba.cuda import codegen
 from numba.cuda.cudadrv import devices
 from ptxcompiler.api import compile_ptx

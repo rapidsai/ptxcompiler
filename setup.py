@@ -21,7 +21,7 @@ module = Extension(
     sources=['ptxcompiler/_ptxcompilerlib.cpp'],
     include_dirs=[os.path.dirname(get_python_inc())],
     libraries=['nvptxcompiler_static'],
-    library_dirs = [get_config_var("LIBDIR")],
+    library_dirs=[get_config_var("LIBDIR")],
     extra_compile_args=['-Wall', '-Werror'],
 )
 
