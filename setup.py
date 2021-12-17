@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import versioneer
 from distutils.sysconfig import get_config_var, get_python_inc
 from setuptools import setup, Extension
 
@@ -27,7 +28,8 @@ module = Extension(
 
 setup(
     name='ptxcompiler',
-    version='0.2.0',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
     packages=['ptxcompiler', 'ptxcompiler.tests'],
