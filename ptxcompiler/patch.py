@@ -49,7 +49,8 @@ def get_logger():
         if config.CUDA_LOG_LEVEL:
             # Create a simple handler that prints to stderr
             handler = logging.StreamHandler(sys.stderr)
-            fmt = '== CUDA [%(relativeCreated)d] %(levelname)5s -- %(message)s'
+            fmt = ('== CUDA (ptxcompiler) [%(relativeCreated)d] '
+                   '%(levelname)5s -- %(message)s')
             handler.setFormatter(logging.Formatter(fmt=fmt))
             logger.addHandler(handler)
         else:
@@ -125,8 +126,9 @@ def patch_needed():
 
 
 def patch_numba_codegen_if_needed():
+    logger = get_logger()
     if patch_needed():
-        logger = get_logger()
-        debug_msg = "Patching Numba codegen for forward compatibility"
-        logger.debug(debug_msg)
+        logger.debug("Patching Numba codegen for forward compatibility")
         codegen.JITCUDACodegen._library_class = PTXStaticCompileCodeLibrary
+    else:
+        logger.debug("Driver version sufficient: not patching Numba codegen")
