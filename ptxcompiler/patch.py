@@ -90,28 +90,13 @@ class PTXStaticCompileCodeLibrary(codegen.CUDACodeLibrary):
         return cubin
 
 
-# Determine the driver and runtime versions for comparison. The logic here is a
-# little odd because the WSL2 preview driver (510.06 at the time of writing)
-# reports a CUDA version of 11.6 but it only accepts PTX up to version 7.4,
-# which is the maximum supported version for 11.4 - see the table in:
-#
-# https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#release-notes)
-#
-# So, for WSL2 we report a driver version of 11.4, because the patch will be
-# needed if we have a toolkit version greater than 11.4.
 CMD = """\
 from ctypes import c_int, byref
 from numba import cuda
-import platform
-
-if 'microsoft-standard-WSL2' in platform.platform():
-    drv_major, drv_minor = 11, 4
-else:
-    dv = c_int(0)
-    cuda.cudadrv.driver.driver.cuDriverGetVersion(byref(dv))
-    drv_major = dv.value // 1000
-    drv_minor = (dv.value - (drv_major * 1000)) // 10
-
+dv = c_int(0)
+cuda.cudadrv.driver.driver.cuDriverGetVersion(byref(dv))
+drv_major = dv.value // 1000
+drv_minor = (dv.value - (drv_major * 1000)) // 10
 run_major, run_minor = cuda.runtime.get_version()
 print(f'{drv_major} {drv_minor} {run_major} {run_minor}')
 """
