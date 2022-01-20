@@ -17,12 +17,15 @@ import versioneer
 from distutils.sysconfig import get_config_var, get_python_inc
 from setuptools import setup, Extension
 
+CUDA_LIB = os.path.join(os.environ.get('CUDA_PATH'), 'lib64')
+CUDA_INC = os.path.join(os.environ.get('CUDA_PATH'), 'include')
+
 module = Extension(
     'ptxcompiler._ptxcompilerlib',
     sources=['ptxcompiler/_ptxcompilerlib.cpp'],
-    include_dirs=[os.path.dirname(get_python_inc())],
+    include_dirs=[os.path.dirname(get_python_inc()), CUDA_INC],
     libraries=['nvptxcompiler_static'],
-    library_dirs=[get_config_var("LIBDIR")],
+    library_dirs=[get_config_var("LIBDIR"), CUDA_LIB],
     extra_compile_args=['-Wall', '-Werror'],
 )
 
