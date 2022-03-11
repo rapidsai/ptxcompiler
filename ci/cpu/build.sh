@@ -68,7 +68,7 @@ else
 fi
 
 gpuci_logger "Build conda pkg for ptxcompiler"
-gpuci_conda_retry mambabuild --croot ${CONDA_BLD_DIR} conda/recipes/ptxcompiler --python=$PYTHON $CONDA_BUILD_ARGS
+gpuci_conda_retry build --croot ${CONDA_BLD_DIR} conda/recipes/ptxcompiler --python=$PYTHON $CONDA_BUILD_ARGS
 
 ################################################################################
 # UPLOAD - Conda packages
