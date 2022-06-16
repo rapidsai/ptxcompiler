@@ -60,3 +60,16 @@ patch_numba_codegen_if_needed()
 This function spawns a new process to check the CUDA Driver and Runtime
 versions, so it can be safely called at any point in a process. It will only
 patch Numba when the Runtime version exceeds the Driver version.
+
+Under certain circumstances (for example running with InfiniBand
+network stacks), spawning a subprocess might not be possible. For
+these cases, the patching behaviour can be controlled using two
+environment variables:
+
+- `PTXCOMPILER_CHECK_NUMBA_CODEGEN_PATCH_NEEDED`: if set to a truthy
+  integer then a subprocess will be spawned to check if patching Numba
+  is necessary. Default value: True (the subprocess check is carried out)
+- `PTXCOMPILER_APPLY_NUMBA_CODEGEN_PATCH`: if it is known that
+  patching is necessary, but spawning a subprocess is not possible,
+  set this to a truthy integer to unconditionally patch Numba. Default
+  value: False (Numba is not unconditionally patched).
