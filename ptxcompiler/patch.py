@@ -1,4 +1,4 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.
+# Copyright (c) 2021-2022, NVIDIA CORPORATION.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import os
 import subprocess
 import sys
 
@@ -127,7 +128,25 @@ def patch_needed():
 
 def patch_numba_codegen_if_needed():
     logger = get_logger()
-    if patch_needed():
+    check = os.getenv("PTXCOMPILER_CHECK_NUMBA_CODEGEN_PATCH_NEEDED")
+    apply = os.getenv("PTXCOMPILER_APPLY_NUMBA_CODEGEN_PATCH")
+    if check is not None:
+        logger.debug(f"PTXCOMPILER_CHECK_NUMBA_CODEGEN_PATCH_NEEDED={check}")
+        try:
+            check = int(check)
+        except ValueError:
+            check = False
+    else:
+        check = True
+    if apply is not None:
+        logger.debug(f"PTXCOMPILER_APPLY_NUMBA_CODEGEN_PATCH={apply}")
+        try:
+            apply = int(apply)
+        except ValueError:
+            apply = False
+    else:
+        apply = False
+    if apply or (check and patch_needed()):
         logger.debug("Patching Numba codegen for forward compatibility")
         codegen.JITCUDACodegen._library_class = PTXStaticCompileCodeLibrary
     else:
