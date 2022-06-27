@@ -30,7 +30,7 @@ requirements:
     - numba >=0.54
     - cudatoolkit >={{ cuda_major ~ ".0" }},<={{ cuda_version }}
   run_constrained:
-    - __cuda >={{ cuda_major ~ ".0" }},<={{ cuda_version }}
+    - __cuda >={{ cuda_major ~ ".0" }}
 
 test:
   requires:
