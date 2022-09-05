@@ -17,10 +17,27 @@ import os
 import subprocess
 import sys
 
-from numba import config
-from numba.cuda import codegen
-from numba.cuda.cudadrv import devices
 from ptxcompiler.api import compile_ptx
+
+_numba_version_ok = False
+_numba_error = None
+
+try:
+    import numba
+    ver = numba.version_info.short
+    required_ver = (0, 54)
+    if ver >= required_ver:
+        _numba_version_ok = True
+    else:
+        _numba_error = (f"version {numba.__version__} is insufficient for "
+                        "ptxcompiler patching - at least "
+                        f"{required_ver[0]}.{required_ver[1]} is needed.")
+
+    from numba import config
+    from numba.cuda import codegen
+    from numba.cuda.cudadrv import devices
+except ImportError as ie:
+    _numba_error = f"failed to import Numba: {ie}."
 
 _logger = None
 
@@ -158,6 +175,10 @@ def patch_needed():
 
 
 def patch_numba_codegen_if_needed():
+    if not _numba_version_ok:
+        msg = f"Cannot patch Numba: {_numba_error}"
+        raise RuntimeError(msg)
+
     logger = get_logger()
 
     if patch_needed():
