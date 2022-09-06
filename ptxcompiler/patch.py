@@ -22,22 +22,29 @@ from ptxcompiler.api import compile_ptx
 _numba_version_ok = False
 _numba_error = None
 
+required_numba_ver = (0, 54)
+
 try:
     import numba
     ver = numba.version_info.short
-    required_ver = (0, 54)
-    if ver >= required_ver:
+    if ver >= required_numba_ver:
         _numba_version_ok = True
     else:
         _numba_error = (f"version {numba.__version__} is insufficient for "
                         "ptxcompiler patching - at least "
-                        f"{required_ver[0]}.{required_ver[1]} is needed.")
-
-    from numba import config
-    from numba.cuda import codegen
-    from numba.cuda.cudadrv import devices
+                        "%s.%s is needed." % required_numba_ver)
 except ImportError as ie:
     _numba_error = f"failed to import Numba: {ie}."
+
+if _numba_version_ok:
+    from numba import config
+    from numba.cuda import codegen
+    from numba.cuda.codegen import CUDACodeLibrary
+    from numba.cuda.cudadrv import devices
+else:
+    # Prevent the definition of PTXStaticCompileCodeLibrary failing if we have
+    # no Numba CUDACodeLibrary - it won't be used anyway
+    CUDACodeLibrary = object
 
 _logger = None
 
@@ -79,7 +86,7 @@ def get_logger():
     return logger
 
 
-class PTXStaticCompileCodeLibrary(codegen.CUDACodeLibrary):
+class PTXStaticCompileCodeLibrary(CUDACodeLibrary):
     def get_cubin(self, cc=None):
         if cc is None:
             ctx = devices.get_context()
@@ -122,6 +129,11 @@ print(f'{drv_major} {drv_minor} {run_major} {run_minor}')
 
 
 def patch_needed():
+    # If Numba is not present, we don't need the patch.
+    # We also can't use it to check driver and runtime versions, so exit early.
+    if not _numba_version_ok:
+        return False
+
     logger = get_logger()
 
     # The patch is needed if the user explicitly forced it with an environment
