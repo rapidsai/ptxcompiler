@@ -49,7 +49,7 @@ module = Extension(
 )
 
 setup(
-    name=f"ptxcompiler{os.getenv('RAPIDS_PY_WHEEL_PACKAGE_SUFFIX', default='')}",
+    name=f"ptxcompiler{os.getenv('RAPIDS_PY_WHEEL_CUDA_SUFFIX', default='')}",
     version=os.getenv("RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE", default=versioneer.get_version()),
     cmdclass=versioneer.get_cmdclass(),
     description='NVIDIA PTX Compiler binding',

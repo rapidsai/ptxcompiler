@@ -1,4 +1,4 @@
-name: ucx-py wheels
+name: ptxcompiler wheels
 
 on:
   push:
