@@ -23,4 +23,8 @@ jobs:
 
       test-container-amd64: "rapidsai/manylinux_2_27"
       test-container-arm64: "rapidsai/manylinux_2_31" 
+
+      test-requires: "pytest"
+      test-unittest: "python -m py.test -v ./ptxcompiler/tests"
+      test-smoketest: "from ptxcompiler import patch; patch.patch_numba_codegen_if_needed()"
     secrets: inherit
