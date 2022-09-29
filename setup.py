@@ -49,8 +49,8 @@ module = Extension(
 )
 
 setup(
-    name='ptxcompiler',
-    version=versioneer.get_version(),
+    name=f"ptxcompiler{os.getenv('RAPIDS_PY_WHEEL_PACKAGE_SUFFIX', default='')}",
+    version=os.getenv("RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE", default=versioneer.get_version()),
     cmdclass=versioneer.get_cmdclass(),
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],

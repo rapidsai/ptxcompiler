@@ -1,0 +1,26 @@
+name: ucx-py wheels
+
+on:
+  push:
+    branches:
+      - 'pull-request/[0-9]+'
+
+jobs:
+  ptxcompiler-wheels:
+    uses: rapidsai/shared-action-workflows/.github/workflows/wheels-manylinux.yml@feat/wheel-ci-actions-2
+    with:
+      package-name: ptxcompiler
+      package-dir: .
+      python-version: "3.8 3.9"
+      python-package-cuda-suffix: "-cu117"
+      python-package-versioneer-override: "22.10.00a"
+
+      manylinux-container-amd64: "rapidsai/manylinux2014_117"
+      manylinux-container-arm64: "rapidsai/manylinux_2_31_117"
+
+      auditwheel-repair-command-amd64: "auditwheel --verbose repair -w {dest_dir} --plat manylinux_2_17_x86_64 {wheel}"
+      auditwheel-repair-command-arm64: "auditwheel --verbose repair -w {dest_dir} --plat manylinux_2_31_aarch64 {wheel}"
+
+      test-container-amd64: "rapidsai/manylinux_2_27"
+      test-container-arm64: "rapidsai/manylinux_2_31" 
+    secrets: inherit
