@@ -13,7 +13,7 @@ jobs:
       package-dir: .
       python-version: "3.8 3.9"
       python-package-cuda-suffix: "-cu11"
-      python-package-versioneer-override: "22.10.00a"
+      python-package-versioneer-override: "0.7.0a0"
 
       manylinux-container-amd64: "rapidsai/manylinux2014_117"
       manylinux-container-arm64: "rapidsai/manylinux_2_31_117"
