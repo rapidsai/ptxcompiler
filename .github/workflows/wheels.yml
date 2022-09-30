@@ -26,6 +26,6 @@ jobs:
 
       test-checkout-src: "false"
       test-requires: "pytest numba"
-      test-unittest: "python -m py.test -v --pyargs ptxcompiler"
+      test-unittest: "python -m pytest -v --pyargs ptxcompiler"
       test-smoketest: "from ptxcompiler import patch; patch.patch_numba_codegen_if_needed()"
     secrets: inherit
