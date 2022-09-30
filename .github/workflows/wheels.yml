@@ -12,7 +12,7 @@ jobs:
       package-name: ptxcompiler
       package-dir: .
       python-version: "3.8 3.9"
-      python-package-cuda-suffix: "-cu117"
+      python-package-cuda-suffix: "-cu11"
       python-package-versioneer-override: "22.10.00a"
 
       manylinux-container-amd64: "rapidsai/manylinux2014_117"
@@ -24,7 +24,8 @@ jobs:
       test-container-amd64: "rapidsai/manylinux_2_27"
       test-container-arm64: "rapidsai/manylinux_2_31" 
 
-      test-requires: "pytest"
+      test-checkout-src: "false"
+      test-requires: "pytest numba"
       test-unittest: "python -m py.test -v --pyargs ptxcompiler"
       test-smoketest: "from ptxcompiler import patch; patch.patch_numba_codegen_if_needed()"
     secrets: inherit
