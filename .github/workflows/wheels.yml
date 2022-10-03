@@ -14,6 +14,7 @@ jobs:
       python-version: "3.8 3.9"
       python-package-cuda-suffix: "-cu11"
       python-package-versioneer-override: "0.7.0a0"
+      python-package-build-tag: '0'
 
       manylinux-container-amd64: "rapidsai/manylinux2014_117"
       manylinux-container-arm64: "rapidsai/manylinux_2_31_117"

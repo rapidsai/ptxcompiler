@@ -51,6 +51,7 @@ module = Extension(
 setup(
     name=f"ptxcompiler{os.getenv('RAPIDS_PY_WHEEL_CUDA_SUFFIX', default='')}",
     version=os.getenv("RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE", default=versioneer.get_version()),
+    license="Apache 2.0",
     cmdclass=versioneer.get_cmdclass(),
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
