@@ -5,6 +5,10 @@ on:
     branches:
       - 'pull-request/[0-9]+'
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   ptxcompiler-wheels:
     uses: rapidsai/shared-action-workflows/.github/workflows/wheels-manylinux.yml@feat/wheel-ci-actions-2
@@ -14,19 +18,12 @@ jobs:
       python-version: "3.8 3.9"
       python-package-cuda-suffix: "-cu11"
       python-package-versioneer-override: "0.7.0a0"
-      python-package-build-tag: '1'
+      python-package-build-tag: '2'
 
       manylinux-container-amd64: "rapidsai/manylinux2014_118"
       manylinux-container-arm64: "rapidsai/manylinux_2_31_118"
 
-      auditwheel-repair-command-amd64: "auditwheel --verbose repair -w {dest_dir} --plat manylinux_2_17_x86_64 {wheel}"
-      auditwheel-repair-command-arm64: "auditwheel --verbose repair -w {dest_dir} --plat manylinux_2_31_aarch64 {wheel}"
-
-      test-container-amd64: "rapidsai/manylinux_2_27"
-      test-container-arm64: "rapidsai/manylinux_2_31" 
-
       test-checkout-src: "false"
       test-requires: "pytest numba"
       test-unittest: "python -m pytest -v --pyargs ptxcompiler"
-      test-smoketest: "from ptxcompiler import patch; patch.patch_numba_codegen_if_needed()"
     secrets: inherit
