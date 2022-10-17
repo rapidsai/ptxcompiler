@@ -15,7 +15,6 @@ jobs:
     with:
       package-name: ptxcompiler
       package-dir: .
-      python-version: "3.8 3.9"
       python-package-cuda-suffix: "-cu11"
       python-package-versioneer-override: "0.7.0"
 
