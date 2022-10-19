@@ -25,6 +25,8 @@ _numba_version_ok = False
 _numba_error = None
 
 required_numba_ver = (0, 54)
+NO_DRIVER = (math.inf, math.inf)
+
 
 try:
     import numba
@@ -195,7 +197,7 @@ def get_versions():
             "Not patching Numba"
         )
         logger.error(msg)
-        return False
+        return NO_DRIVER
 
     versions = [int(s) for s in cp.stdout.strip().split()]
     driver_version = tuple(versions[:2])
@@ -218,7 +220,7 @@ def safe_get_versions():
                 "No way to determine driver and runtime versions for patching, "
                 "set PTXCOMPILER_KNOWN_DRIVER_VERSION/PTXCOMPILER_KNOWN_RUNTIME_VERSION"
             )
-            return math.inf, math.inf
+            return NO_DRIVER
         else:
             driver_version, runtime_version = get_versions()
         return driver_version, runtime_version
