@@ -134,10 +134,10 @@ run_major, run_minor = cuda.runtime.get_version()
 print(f'{drv_major} {drv_minor} {run_major} {run_minor}')
 """
 
-logger = get_logger()
 
 
 def patch_forced_by_user():
+    logger = get_logger()
     # The patch is needed if the user explicitly forced it with an environment
     # variable.
     apply = os.getenv("PTXCOMPILER_APPLY_NUMBA_CODEGEN_PATCH")
@@ -152,6 +152,7 @@ def patch_forced_by_user():
 
 
 def check_disabled_in_env():
+    logger = get_logger()
     # We should avoid checking whether the patch is needed if the user
     # requested that we don't check (e.g. in a non-fork-safe environment)
     check = os.getenv("PTXCOMPILER_CHECK_NUMBA_CODEGEN_PATCH_NEEDED")
@@ -185,6 +186,7 @@ def patch_needed():
 
 
 def get_versions():
+    logger = get_logger()
     cp = subprocess.run([sys.executable, "-c", CMD], capture_output=True)
     if cp.returncode:
         msg = (
