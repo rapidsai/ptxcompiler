@@ -210,6 +210,18 @@ def get_versions():
 
 
 def safe_get_versions():
+    """
+    Return a 2-tuple of deduced driver and runtime versions.
+
+    To ensure that this function does not initialize a CUDA context, calls to the
+    runtime and driver are made in a subprocess.
+
+    If PTXCOMPILER_CHECK_NUMBA_CODEGEN_PATCH_NEEDED is set
+    in the environment, then this subprocess call is not launched. To specify the
+    driver and runtime versions of the environment in this case, set
+    PTXCOMPILER_KNOWN_DRIVER_VERSION and PTXCOMPILER_KNOWN_RUNTIME_VERSION
+    appropriately.
+    """
     if check_disabled_in_env():
         try:
             # allow user to specify driver/runtime versions manually, if necessary
