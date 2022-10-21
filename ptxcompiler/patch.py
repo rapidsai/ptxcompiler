@@ -227,7 +227,11 @@ def safe_get_versions():
             # allow user to specify driver/runtime versions manually, if necessary
             driver_version = os.environ["PTXCOMPILER_KNOWN_DRIVER_VERSION"].split(".")
             runtime_version = os.environ["PTXCOMPILER_KNOWN_RUNTIME_VERSION"].split(".")
-        except KeyError:
+            driver_version, runtime_version = (
+                tuple(map(int, driver_version)),
+                tuple(map(int, runtime_version))
+            )
+        except (KeyError, ValueError):
             warnings.warn(
                 "No way to determine driver and runtime versions for patching, "
                 "set PTXCOMPILER_KNOWN_DRIVER_VERSION/PTXCOMPILER_KNOWN_RUNTIME_VERSION"
