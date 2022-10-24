@@ -150,7 +150,7 @@ def patch_forced_by_user():
         except ValueError:
             apply = False
 
-    return True if apply else False
+    return bool(apply)
 
 
 def check_disabled_in_env():
@@ -167,7 +167,7 @@ def check_disabled_in_env():
     else:
         check = True
 
-    return check == False
+    return not check
 
 
 def patch_needed():
