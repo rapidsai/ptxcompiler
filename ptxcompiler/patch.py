@@ -237,9 +237,9 @@ def safe_get_versions():
                 "set PTXCOMPILER_KNOWN_DRIVER_VERSION/PTXCOMPILER_KNOWN_RUNTIME_VERSION"
             )
             return NO_DRIVER
-        else:
-            driver_version, runtime_version = get_versions()
-        return driver_version, runtime_version
+    else:
+        driver_version, runtime_version = get_versions()
+    return driver_version, runtime_version
 
 
 def patch_numba_codegen_if_needed():
