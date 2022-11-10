@@ -5,7 +5,7 @@ on:
     inputs:
       versioneer-override:
         type: string
-        default: '0.7.0'
+        default: ''
       build-tag:
         type: string
         default: ''
