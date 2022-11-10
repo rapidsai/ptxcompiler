@@ -1,9 +1,26 @@
 name: ptxcompiler wheels
 
 on:
-  push:
-    branches:
-      - 'pull-request/[0-9]+'
+  workflow_call:
+    inputs:
+      versioneer-override:
+        type: string
+        default: '0.7.0'
+      build-tag:
+        type: string
+        default: ''
+      branch:
+        required: true
+        type: string
+      date:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+      build-type:
+        type: string
+        default: nightly
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
@@ -11,17 +28,24 @@ concurrency:
 
 jobs:
   ptxcompiler-wheels:
-    uses: rapidsai/shared-action-workflows/.github/workflows/wheels-manylinux.yml@feat/wheel-ci-actions-2
+    uses: rapidsai/shared-action-workflows/.github/workflows/wheels-manylinux.yml
     with:
+      repo: rapidsai/ptxcompiler
+
+      build-type: ${{ inputs.build-type }}
+      branch: ${{ inputs.branch }}
+      sha: ${{ inputs.sha }}
+      date: ${{ inputs.date }}
+
       package-name: ptxcompiler
       package-dir: .
-      python-package-cuda-suffix: "-cu11"
-      python-package-versioneer-override: "0.7.0"
+
+      python-package-versioneer-override: ${{ inputs.versioneer-override }}
+      python-package-build-tag: ${{ inputs.build-tag }}
 
       manylinux-container-amd64: "rapidsai/manylinux2014_118"
       manylinux-container-arm64: "rapidsai/manylinux_2_31_118"
 
       test-checkout-src: "false"
-      test-requires: "pytest numba"
       test-unittest: "python -m pytest -v --pyargs ptxcompiler"
     secrets: inherit

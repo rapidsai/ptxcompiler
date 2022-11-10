@@ -56,4 +56,5 @@ setup(
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
     packages=['ptxcompiler', 'ptxcompiler.tests'],
+    extras_require={"test": ["pytest", "numba"]},
 )
