@@ -23,7 +23,7 @@ on:
         default: nightly
 
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: ptxcompiler--wheels-"${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
