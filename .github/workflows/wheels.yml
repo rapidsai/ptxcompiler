@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   ptxcompiler-wheels:
-    uses: rapidsai/shared-action-workflows/.github/workflows/wheels-manylinux.yml
+    uses: rapidsai/shared-action-workflows/.github/workflows/wheels-manylinux.yml@main
     with:
       repo: rapidsai/ptxcompiler
 
