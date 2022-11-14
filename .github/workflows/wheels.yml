@@ -43,8 +43,8 @@ jobs:
       python-package-versioneer-override: ${{ inputs.versioneer-override }}
       python-package-build-tag: ${{ inputs.build-tag }}
 
-      manylinux-container-amd64: "rapidsai/manylinux2014_118"
-      manylinux-container-arm64: "rapidsai/manylinux_2_31_118"
+      manylinux-container-amd64: "rapidsai/manylinux2014_118_x86_64"
+      manylinux-container-arm64: "rapidsai/manylinux_2_31_118_aarch64"
 
       test-checkout-src: "false"
       test-unittest: "python -m pytest -v --pyargs ptxcompiler"
