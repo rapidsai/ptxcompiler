@@ -48,7 +48,7 @@ module = Extension(
     extra_compile_args=['-Wall', '-Werror'],
 )
 
-if "RAPIDS_PY_WHEEL_CUDA_SUFFIX" in os.environ:
+if "RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE" in os.environ:
     # borrow a similar hack from dask-cuda: https://github.com/rapidsai/dask-cuda/blob/b3ed9029a1ad02a61eb7fbd899a5a6826bb5cfac/setup.py#L12-L31
     orig_get_versions = versioneer.get_versions
 
