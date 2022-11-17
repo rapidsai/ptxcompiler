@@ -57,7 +57,7 @@ if "RAPIDS_PY_WHEEL_CUDA_SUFFIX" in os.environ:
     def get_versions():
         data = orig_get_versions()
         if version_override != "":
-            data["version"] = version
+            data["version"] = version_override
         return data
 
     versioneer.get_versions = get_versions
