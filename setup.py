@@ -48,11 +48,27 @@ module = Extension(
     extra_compile_args=['-Wall', '-Werror'],
 )
 
+if "RAPIDS_PY_WHEEL_CUDA_SUFFIX" in os.environ:
+    # borrow a similar hack from dask-cuda: https://github.com/rapidsai/dask-cuda/blob/b3ed9029a1ad02a61eb7fbd899a5a6826bb5cfac/setup.py#L12-L31
+    orig_get_versions = versioneer.get_versions
+
+    version_override = os.environ.get("RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE", "")
+
+    def get_versions():
+        data = orig_get_versions()
+        if version_override != "":
+            data["version"] = version
+        return data
+
+    versioneer.get_versions = get_versions
+
 setup(
-    name='ptxcompiler',
-    version=versioneer.get_version(),
+    name=f"ptxcompiler{os.getenv('RAPIDS_PY_WHEEL_CUDA_SUFFIX', default='')}",
+    version=os.getenv("RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE", default=versioneer.get_version()),
+    license="Apache 2.0",
     cmdclass=versioneer.get_cmdclass(),
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
     packages=['ptxcompiler', 'ptxcompiler.tests'],
+    extras_require={"test": ["pytest", "numba"]},
 )
