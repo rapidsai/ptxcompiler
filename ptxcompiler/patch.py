@@ -24,22 +24,31 @@ from ptxcompiler.api import compile_ptx
 _numba_version_ok = False
 _numba_error = None
 
-required_numba_ver = (0, 54)
+min_numba_ver = (0, 54)
+max_numba_ver = (0, 56)
 NO_DRIVER = (math.inf, math.inf)
 
+mvc_docs_url = ("https://numba.readthedocs.io/en/stable/cuda/"
+                "minor_version_compatibility.html")
 
 try:
     import numba
 
     ver = numba.version_info.short
-    if ver >= required_numba_ver:
-        _numba_version_ok = True
-    else:
+    if ver < min_numba_ver:
         _numba_error = (
             f"version {numba.__version__} is insufficient for "
             "ptxcompiler patching - at least "
-            "%s.%s is needed." % required_numba_ver
+            "%s.%s is needed." % min_numba_ver
         )
+    elif ver > max_numba_ver:
+        _numba_error = (
+            f"version {numba.__version__} should not be patched. "
+            "Set the environment variable "
+            "NUMBA_CUDA_ENABLE_MINOR_VERSION_COMPATIBILITY=1 instead. "
+            f"See {mvc_docs_url} for more details.")
+    else:
+        _numba_version_ok = True
 except ImportError as ie:
     _numba_error = f"failed to import Numba: {ie}."
 
