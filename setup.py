@@ -45,7 +45,7 @@ module = Extension(
     include_dirs=include_dirs,
     libraries=['nvptxcompiler_static'],
     library_dirs=library_dirs,
-    extra_compile_args=['-Wall', '-Werror'],
+    extra_compile_args=['-Wall', '-Werror', '-std=c++11'],
 )
 
 if "RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE" in os.environ:
