@@ -18,7 +18,7 @@ import pytest
 from ptxcompiler import patch
 from ptxcompiler.patch import (_numba_version_ok,
                                patch_numba_codegen_if_needed,
-                               required_numba_ver, PTXStaticCompileCodeLibrary)
+                               min_numba_ver, PTXStaticCompileCodeLibrary)
 from unittest.mock import patch as mock_patch
 
 
@@ -33,7 +33,7 @@ def test_numba_patching_numba_not_ok():
 
 @pytest.mark.skipif(
     not _numba_version_ok,
-    reason=f"Requires Numba >= {required_numba_ver[0]}.{required_numba_ver[1]}"
+    reason=f"Requires Numba >= {min_numba_ver[0]}.{min_numba_ver[1]}"
 )
 def test_numba_patching():
     # We import the codegen here rather than at the top level because the
