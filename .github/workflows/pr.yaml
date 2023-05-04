@@ -25,3 +25,12 @@ jobs:
         run: conda mambabuild conda/recipes/ptxcompiler
         env:
           CUDA_VER: ${{ matrix.CUDA_VER }}
+  # The following job exists so that it can be set as a consistent required job
+  # for PRs to merge. Using the matrix job as a required job would require
+  # updating GitHub's protected branch setting every time the matrix values
+  # above change.
+  complete:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - run: exit 0
