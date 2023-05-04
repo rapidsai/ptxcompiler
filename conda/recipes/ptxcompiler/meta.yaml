@@ -1,9 +1,9 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.
+# Copyright (c) 2021-2023, NVIDIA CORPORATION.
 
 {% set version = environ.get('GIT_DESCRIBE_TAG', '0.0.0.dev').lstrip('v') + environ.get('VERSION_SUFFIX', '') %}
 {% set py_version=environ.get('CONDA_PY', 38) %}
-{% set cuda_version='.'.join(environ.get('CUDA', '11.5').split('.')[:2]) %}
-{% set cuda_major=cuda_version.split('.')[0] %}
+{% set cuda_major_minor = ".".join(environ['CUDA_VER'].split(".")[:2]) %}
+{% set cuda_major = cuda_major_minor.split(".")[0] %}
 
 package:
   name: ptxcompiler
@@ -14,6 +14,8 @@ source:
 
 build:
   number: {{ GIT_DESCRIBE_NUMBER }}
+  ignore_run_exports_from:
+    - {{ compiler("cuda") }}
   string: cuda_{{ cuda_major }}_py{{ py_version }}_{{ GIT_DESCRIBE_HASH }}_{{ GIT_DESCRIBE_NUMBER }}
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -21,14 +23,15 @@ requirements:
   build:
     - {{ compiler("c") }}
     - {{ compiler("cxx") }}
+    - {{ compiler("cuda") }}
   host:
     - python
     - pip
-    - cudatoolkit {{ cuda_version }}.*
+    - cudatoolkit {{ cuda_major_minor }}
   run:
     - python
     - numba >=0.54
-    - cudatoolkit >={{ cuda_major ~ ".0" }},<={{ cuda_version }}
+    - cudatoolkit >={{ cuda_major ~ ".0" }},<={{ cuda_major_minor }}
   run_constrained:
     - __cuda >={{ cuda_major ~ ".0" }}
 
