@@ -53,7 +53,6 @@ except ImportError as ie:
     _numba_error = f"failed to import Numba: {ie}."
 
 if _numba_version_ok:
-    from numba import config
     from numba.cuda import codegen
     from numba.cuda.codegen import CUDACodeLibrary
     from numba.cuda.cudadrv import devices
@@ -78,7 +77,7 @@ def get_logger():
 
     # Create a default configuration if none exists already
     if not logger.hasHandlers():
-        lvl = str(config.CUDA_LOG_LEVEL).upper()
+        lvl = str(numba.config.CUDA_LOG_LEVEL).upper()
         lvl = getattr(logging, lvl, None)
 
         if not isinstance(lvl, int):
@@ -87,7 +86,7 @@ def get_logger():
         logger.setLevel(lvl)
 
         # Did user specify a level?
-        if config.CUDA_LOG_LEVEL:
+        if numba.config.CUDA_LOG_LEVEL:
             # Create a simple handler that prints to stderr
             handler = logging.StreamHandler(sys.stderr)
             fmt = (
