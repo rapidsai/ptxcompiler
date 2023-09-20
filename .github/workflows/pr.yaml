@@ -13,7 +13,7 @@ jobs:
       matrix:
         CUDA_VER: ["11.8.0"]
     runs-on: ubuntu-latest
-    container: rapidsai/ci:cuda${{ matrix.CUDA_VER }}-ubuntu22.04-py3.10
+    container: rapidsai/ci-conda:cuda${{ matrix.CUDA_VER }}-ubuntu22.04-py3.10
     steps:
       - uses: actions/checkout@v3
         with:
