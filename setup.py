@@ -37,6 +37,7 @@ if not CUDA_HOME:
 if not os.path.isdir(CUDA_HOME):
     raise OSError(f"Invalid CUDA_HOME: directory does not exist: {CUDA_HOME}")
 include_dirs.append(os.path.join(CUDA_HOME, "include"))
+library_dirs.append(os.path.join(CUDA_HOME, "lib"))
 library_dirs.append(os.path.join(CUDA_HOME, "lib64"))
 
 module = Extension(
