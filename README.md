@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> The final release of this project was `v0.8.1`.
+> The core functionality of this project is replaced by the nvjitlink library in CUDA 12+.
+> Bindings for nvjitlink are available in `cuda.core`, and for
+> `numba-cuda>=0.16`, `numba-cuda` automatically detects and enables nvjitlink
+> when needed and available with no explicit configuration.
+> See https://github.com/rapidsai/ptxcompiler/issues/42 for details.
+
 # Static PTX Compiler Python binding and Numba patch
 
 This package provides a Python binding for the `libptxcompiler_static.a` library
