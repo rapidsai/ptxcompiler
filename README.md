@@ -21,8 +21,7 @@ part of the compilation process. This covers all use cases, except:
 
 ## Numba support
 
-Numba 0.54.1 and the current master branch are supported - other versions of
-Numba are unsupported.
+Numba 0.54.1 and above are supported.
 
 
 ## Installation
@@ -57,7 +56,18 @@ python ptxcompiler/tests/test_lib.py
 
 ## Usage
 
-To patch Numba to use the Static PTX Compiler library if needed, call the
+### Numba >= 0.57
+
+To configure Numba to use ptxcompiler, set the environment variable
+`NUMBA_CUDA_ENABLE_MINOR_VERSION_COMPATIBILITY=1`. See the Numba [CUDA Minor
+Version Compatibility
+documentation](https://numba.readthedocs.io/en/stable/cuda/minor_version_compatibility.html)
+for further information.
+
+### Numba versions < 0.57
+
+Numba versions < 0.57 need to be monkey patched to use ptxcompiler if required.
+To apply the monkey patch if needed, call the
 `patch_numba_codegen_if_needed()` function:
 
 ```python

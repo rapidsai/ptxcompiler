@@ -37,6 +37,7 @@ if not CUDA_HOME:
 if not os.path.isdir(CUDA_HOME):
     raise OSError(f"Invalid CUDA_HOME: directory does not exist: {CUDA_HOME}")
 include_dirs.append(os.path.join(CUDA_HOME, "include"))
+library_dirs.append(os.path.join(CUDA_HOME, "lib"))
 library_dirs.append(os.path.join(CUDA_HOME, "lib64"))
 
 module = Extension(
@@ -45,14 +46,32 @@ module = Extension(
     include_dirs=include_dirs,
     libraries=['nvptxcompiler_static'],
     library_dirs=library_dirs,
-    extra_compile_args=['-Wall', '-Werror'],
+    extra_compile_args=['-Wall', '-Werror', '-std=c++11'],
 )
 
+if "RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE" in os.environ:
+    orig_get_versions = versioneer.get_versions
+
+    version_override = os.environ["RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE"]
+    if version_override == "":
+        raise RuntimeError(
+            "RAPIDS_PY_WHEEL_VERSIONEER_OVERRIDE in environment but empty"
+        )
+
+    def get_versions():
+        data = orig_get_versions()
+        data["version"] = version_override
+        return data
+
+    versioneer.get_versions = get_versions
+
 setup(
-    name='ptxcompiler',
+    name=f"ptxcompiler{os.getenv('RAPIDS_PY_WHEEL_CUDA_SUFFIX', default='')}",
     version=versioneer.get_version(),
+    license="Apache 2.0",
     cmdclass=versioneer.get_cmdclass(),
     description='NVIDIA PTX Compiler binding',
     ext_modules=[module],
     packages=['ptxcompiler', 'ptxcompiler.tests'],
+    extras_require={"test": ["pytest", "numba"]},
 )
